@@ -1,22 +1,20 @@
 import React from 'react'
 import '../style/style.scss';
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import HomePage from '../component/HomePage'
+import OffersPage from '../component/OffersPage';
 import SignInPage from '../component/SignInPage';
-import UserDetails from '../component/UserDetails';
-import PersonalDetails from '../component/PersonalDetails';
-import Confirm from '../component/Confirm';
 
 const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-sm navbar-light bg-light px-5">
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
+                <ul className="navbar-nav mr-auto d-flex justify-content-between w-100 align-items-center">
+                    <NavLink className="navbar-brand" to="/">Navbar</NavLink>
+                    <li className="nav-item active d-flex justify-content-between align-items-center">
                         <NavLink className="nav-link" to="/">Home</NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <NavLink className="nav-link" to="/signin">Sign In</NavLink>
+                        <NavLink className="nav-link" to="/offers">Offers</NavLink>
+                        <NavLink className="nav-link" to="/sign-in">Sign in</NavLink>
                     </li>
                 </ul>
             </div>
@@ -24,18 +22,25 @@ const Navbar = () => {
     )
 }
 
+//? Bunu location olarak kullan!!
+// const Part = () => {
+//     let location = useLocation()
+//     return (
+//         <div>{location.pathname}</div>
+//     )
+// }
+
 const AppRouter = () => {
     return (
         <>
             <BrowserRouter>
-            <Navbar />
+                <Navbar />
                 <Routes>
                     <Route path='/' element={<HomePage />} />
-                    <Route path='/signin' element={<SignInPage />}>
-                        <Route index element={<UserDetails />} />
-                        <Route path='personal' element={<PersonalDetails />} />
-                        <Route path='personal/:name' element={<Confirm />} />
-                    </Route>
+                    <Route path='/offers' element={<OffersPage />} />
+                    <Route path='/sign-in' element={<SignInPage signIn={true}/>} />
+                    <Route path='/register' element={<SignInPage register={true}/>} />
+                    <Route path='/forgot-password' element={<SignInPage forgotPassword={true}/>} />
                 </Routes>
             </BrowserRouter>
         </>
