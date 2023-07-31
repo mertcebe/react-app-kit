@@ -6,6 +6,7 @@ import OffersPage from '../component/OffersPage';
 import SignInPage from '../component/SignInPage';
 
 const Navbar = () => {
+    let isAuthorized = false
     return (
         <nav className="navbar navbar-expand-sm navbar-light bg-light px-5">
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
@@ -14,7 +15,7 @@ const Navbar = () => {
                     <li className="nav-item active d-flex justify-content-between align-items-center">
                         <NavLink className="nav-link" to="/">Home</NavLink>
                         <NavLink className="nav-link" to="/offers">Offers</NavLink>
-                        <NavLink className="nav-link" to="/sign-in">Sign in</NavLink>
+                        {isAuthorized ? <NavLink className="nav-link" to="/profile">Profile</NavLink>:<NavLink className="nav-link" to="/sign-in">Sign in</NavLink>}
                     </li>
                 </ul>
             </div>

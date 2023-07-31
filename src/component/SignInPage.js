@@ -3,7 +3,7 @@ import appImage1 from '../logo/appImage1.jpg'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import database, { auth, provider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, updatePassword, sendPasswordResetEmail, signInWithPopup } from '../firebase/myFirebaseConfig'
-import { get, ref, serverTimestamp, set } from 'firebase/database'
+import { get, ref, set } from 'firebase/database'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -40,11 +40,9 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     }
 
     const submitForIn = () => {
-        console.log("in");
-        console.log(email, password);
         signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
+            .then((userCredentials) => {
+                const user = userCredentials.user;
                 console.log(user.uid + " have just sign in!");
                 navigate("/");
             })
@@ -55,23 +53,18 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     }
 
     const submitForUp = async () => {
-        console.log(name, email, password);
         try {
             let userCredentials = createUserWithEmailAndPassword(auth, email, password);
             let user = "";
             await userCredentials.then((snapshot) => {
-                console.log(snapshot.user);
                 user = snapshot.user;
             })
 
-            console.log(user.uid);
             updateProfile(auth.currentUser, {
                 displayName: name
             });
 
             const formData = { name, email };
-            // delete formData.password;
-            // formData.timeStamp = serverTimestamp();
             set(ref(database, `users/${user.uid}`), formData)
 
             navigate("/sign-in");
@@ -82,14 +75,12 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     }
 
     const submitForForgot = () => {
-        console.log("forgot");
-        console.log(email);
         sendPasswordResetEmail(auth, email).then(() => {
             toast.success("Email just send successfully!");
         })
-        .catch(() => {
-            toast.error("Email couldn't send!");
-        })
+            .catch(() => {
+                toast.error("Email couldn't send!");
+            })
     }
 
     return (
@@ -115,7 +106,10 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
                         </>
                         :
                         <>
-                            {register ? <h4 className='mb-5'>Sign Up</h4> : <h4 className='mb-5'>Sign In</h4>}
+                            {register ?
+                                <h4 className='mb-5'>Sign Up</h4>
+                                : <h4 className='mb-5'>Sign In</h4>
+                            }
                             {
                                 register ?
                                     <div className="form-group mb-3">
