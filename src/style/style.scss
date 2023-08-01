@@ -21,8 +21,8 @@
 .liEl:hover > .deleteBtn{
     display: inline-block;
 }
-
 .radioInput:checked + #myLabel{
     background-color: #1d5358;
     color: #fff;
+    box-shadow: none;
 }

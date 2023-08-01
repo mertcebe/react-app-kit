@@ -7,7 +7,7 @@ const Back = ({top, left}) => {
     <div style={{position: "absolute", top: top, left: left}}>
         <button className='btn' onClick={()=>{
             navigate(-1);
-        }}><i class="fa-solid fa-arrow-left"></i></button>
+        }}><i className="fa-solid fa-arrow-left"></i></button>
     </div>
   )
 }
