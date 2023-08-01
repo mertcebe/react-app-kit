@@ -10,6 +10,8 @@ import { auth } from '../firebase/myFirebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import useAuthStatus from '../hooks/useAuthStatus';
 import PublicRoute from '../component/PublicRoute';
+import Loading from '../component/Loading';
+import CreatePage from '../component/CreatePage';
 
 
 const Navbar = () => {
@@ -39,25 +41,37 @@ const Navbar = () => {
 // }
 
 const AppRouter = () => {
-    let { isAuthorized } = useAuthStatus();
+    let { isAuthorized, loading } = useAuthStatus();
     return (
         <>
-            <BrowserRouter>
-                <Navbar />
-                <Routes>
-                    <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
-                        <Route path='/' element={<HomePage />} />
-                        <Route path='/offers' element={<OffersPage />} />
-                        <Route path='/profile' element={<ProfilePage />} />
-                    </Route>
+            {
+                loading ?
+                    <>
+                        <Loading />
+                    </>
+                :
+                    <>
+                        <BrowserRouter>
+                            <Navbar />
+                            <Routes>
+                                <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
+                                    <Route path='/' element={<HomePage />} />
+                                    <Route path='/offers' element={<OffersPage />} />
+                                    <Route path='/profile'>
+                                        <Route index element={<ProfilePage />} />
+                                        <Route path='create-listing' element={<CreatePage />} />
+                                    </Route>
+                                </Route>
 
-                    <Route element={<PublicRoute />} >
-                        <Route path='/sign-in' element={<SignInPage signIn={true} />} />
-                        <Route path='/register' element={<SignInPage register={true} />} />
-                        <Route path='/forgot-password' element={<SignInPage forgotPassword={true} />} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
+                                <Route element={<PublicRoute isAuthorized={isAuthorized} />} >
+                                    <Route path='/sign-in' element={<SignInPage signIn={true} />} />
+                                    <Route path='/register' element={<SignInPage register={true} />} />
+                                    <Route path='/forgot-password' element={<SignInPage forgotPassword={true} />} />
+                                </Route>
+                            </Routes>
+                        </BrowserRouter>
+                    </>
+            }
         </>
     )
 }

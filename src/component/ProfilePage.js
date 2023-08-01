@@ -5,6 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { ref, set } from 'firebase/database';
 import database from '../firebase/myFirebaseConfig'
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const ProfilePage = () => {
   let user = auth.currentUser;
@@ -59,11 +60,11 @@ const ProfilePage = () => {
           <div className="form-group mb-3">
             <input type="email" value={user.email} className="form-control" disabled placeholder="Email" />
           </div>
-          <div className='d-flex justify-content-between align-items-center mb-3'>
+          <div className='d-flex justify-content-between align-items-center mb-4'>
             <small id='smallEl' className='d-block'>Would you like to change your name? <button type='button' onClick={editFunc} id='editBtn' className='text-danger bg-light border-0'>{changeDetails ? "Apply changes" : "Edit"}</button></small>
             <button type='button' onClick={signOutFunc} className='bg-light border-0'>Sign out</button>
           </div>
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <Link to='create-listing' className="btn btn-primary w-100">Sell or Rent Your Home</Link>
         </form>
       </div>
       <ToastContainer

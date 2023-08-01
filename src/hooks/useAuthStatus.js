@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 export default () => {
     let [isAuthorized, setIsAuthorized] = useState(false);
+    let [loading, setLoading] = useState(true);
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -13,7 +14,8 @@ export default () => {
             else {
                 setIsAuthorized(false);
             }
+            setLoading(false);
         })
     }, []);
-    return { isAuthorized }
+    return { isAuthorized, loading }
 }

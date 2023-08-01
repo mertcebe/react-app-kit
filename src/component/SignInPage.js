@@ -2,7 +2,7 @@ import React, { useReducer, useState } from 'react'
 import appImage1 from '../logo/appImage1.jpg'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
-import database, { auth, provider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, updatePassword, sendPasswordResetEmail, signInWithPopup } from '../firebase/myFirebaseConfig'
+import database, { auth, provider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, updatePassword, sendPasswordResetEmail, signInWithRedirect } from '../firebase/myFirebaseConfig'
 import { get, ref, set } from 'firebase/database'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,7 +20,7 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     let navigate = useNavigate();
 
     const submitWithGoogle = () => {
-        signInWithPopup(auth, provider).then(() => {
+        signInWithRedirect(auth, provider).then(() => {
             set(ref(database, `users/${auth.currentUser.uid}`), { email: auth.currentUser.email, name: auth.currentUser.displayName })
             navigate("/");
         })
