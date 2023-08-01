@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useReducer, useState } from 'react'
 import appImage1 from '../logo/appImage1.jpg'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
@@ -49,23 +49,23 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
             .catch((err) => {
                 toast.error("Something went wrong with the sign in");
             })
-
     }
 
     const submitForUp = async () => {
         try {
             let userCredentials = createUserWithEmailAndPassword(auth, email, password);
-            let user = "";
-            await userCredentials.then((snapshot) => {
-                user = snapshot.user;
-            })
+            // let user = "";
+            let user = (await userCredentials).user
+            // await userCredentials.then((snapshot) => {
+            //     user = snapshot.user;
+            // })
 
             updateProfile(auth.currentUser, {
                 displayName: name
             });
 
             const formData = { name, email };
-            set(ref(database, `users/${user.uid}`), formData)
+            set(ref(database, `users/${user.uid}`), formData);
 
             navigate("/sign-in");
             toast.success("Sign up with successfully!");
@@ -99,17 +99,14 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
                                 }} className="form-control" placeholder="Enter email" />
                             </div>
                             <div className='d-flex justify-content-between align-items-center'>
-                                <small className='d-block'>Don't have an account? {register ? <Link to='/sign-in' className='text-danger'>Sign in</Link> : <Link to='/register' className='text-danger'>Register</Link>}</small>
+                                <small className='d-block'>Don't have an account? <Link to='/register' className='text-danger'>Register</Link></small>
                                 <Link to='/sign-in' className='d-block'>Sign in instead</Link>
                             </div>
                             <button type="submit" className="btn btn-info mt-4">Send reset email</button>
                         </>
                         :
                         <>
-                            {register ?
-                                <h4 className='mb-5'>Sign Up</h4>
-                                : <h4 className='mb-5'>Sign In</h4>
-                            }
+                            <h4 className='mb-5'>{register ? "Sign Up" : "Sign In"}</h4>
                             {
                                 register ?
                                     <div className="form-group mb-3">
