@@ -46,7 +46,7 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
                 console.log(user.uid + " have just sign in!");
                 navigate("/");
             })
-            .catch((err) => {
+            .catch(() => {
                 toast.error("Something went wrong with the sign in");
             })
     }
@@ -54,18 +54,13 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     const submitForUp = async () => {
         try {
             let userCredentials = createUserWithEmailAndPassword(auth, email, password);
-            // let user = "";
-            let user = (await userCredentials).user
-            // await userCredentials.then((snapshot) => {
-            //     user = snapshot.user;
-            // })
+            let user = (await userCredentials).user;
 
             updateProfile(auth.currentUser, {
                 displayName: name
             });
 
-            const formData = { name, email };
-            set(ref(database, `users/${user.uid}`), formData);
+            set(ref(database, `users/${user.uid}`), { name, email });
 
             navigate("/sign-in");
             toast.success("Sign up with successfully!");
@@ -75,9 +70,10 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     }
 
     const submitForForgot = () => {
-        sendPasswordResetEmail(auth, email).then(() => {
-            toast.success("Email just send successfully!");
-        })
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                toast.success("Email just send successfully!");
+            })
             .catch(() => {
                 toast.error("Email couldn't send!");
             })

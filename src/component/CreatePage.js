@@ -2,6 +2,8 @@ import React, { useEffect, useReducer, useState } from 'react'
 import { styled } from 'styled-components'
 import Back from './Back'
 import { reducer, setImages, setValues } from './CreateAction'
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 
 
 const MyOption = styled.label({
@@ -26,6 +28,7 @@ const CreatePage = () => {
     parkingSpot: "no",
     furnished: "no",
     address: "",
+    location: {},
     description: "",
     offer: "no",
     regularPrice: 0,
@@ -35,13 +38,24 @@ const CreatePage = () => {
 
   const submitFunc = (e) => {
     e.preventDefault();
-    if (state.offer === "no") {
-      delete state.discountedPrice;
-      console.log(state)
-    }
-    else {
-      console.log(state)
-    }
+
+    let apiKey = "3eb1eb649f804b20bb73e005acf1c940";
+
+    let location = {};
+    axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${state.address}&key=${apiKey}`)
+      .then(async (response) => {
+        if (response.data.results.length > 0) {
+          console.log(response.data.results[0]);
+          location.lat = await response.data.results[0]?.geometry.lat ?? 0;
+          location.lng = await response.data.results[0]?.geometry.lng ?? 0;
+          state.location = location;
+          toast.success("Successfully have found that location");
+          console.log(state);
+        }
+        else {
+          toast.error("have not found that location");
+        }
+      })
   }
 
   return (
@@ -58,6 +72,7 @@ const CreatePage = () => {
             setValues(dispatch, "sellOrRent", e.target.value);
           }} id="radio1Input" className='radioInput' style={{ display: "none" }} />
           <MyOption htmlFor='radio1Input' id='myLabel'>Sell</MyOption>
+
           <input type="radio" name="radio1" defaultChecked value="rent" onChange={(e) => {
             setValues(dispatch, "sellOrRent", e.target.value);
           }} id="radio1Input2" className='radioInput' style={{ display: "none" }} />
@@ -168,19 +183,33 @@ const CreatePage = () => {
               </div>
             </div>
             :
-            <></>
+            <>
+              {delete state.discountedPrice}
+            </>
         }
 
         <div className='mb-3'>
           <small className='d-block'>Images</small>
-          <input type="file" required multiple accept='.png, .jpeg, .jpg' onChange={(e) => {
+          <input type="file" id='imgInput' required multiple accept='.png, .jpeg, .jpg' onChange={(e) => {
             // setValues(dispatch, "img", e.target.value);
-            setImages(dispatch, e.target.value);
+            setValues(dispatch, "img", e.target.files);
           }} />
         </div>
 
         <button type='submit' className='btn btn-success btn-sm w-100 my-4'>Create Listing</button>
       </form>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   )
 }
