@@ -17,12 +17,11 @@ const ProfilePage = () => {
 
   const editFunc = () => {
     setChangeDetails((prevState) => !prevState);
-    // document.getElementById("editBtn").innerHTML = "Apply changes";
+
     if (changeDetails === false) {
       document.getElementById("nameInput").style.backgroundColor = "#ff4949";
       document.getElementById("nameInput").style.color = "#fff";
       setDisabled(false);
-
     }
     else {
       document.getElementById("nameInput").style.backgroundColor = "white";
@@ -42,7 +41,6 @@ const ProfilePage = () => {
 
   const signOutFunc = () => {
     signOut(auth).then(() => {
-      toast.success("Successfully sign out!");
       navigate("/sign-in");
     })
   }
