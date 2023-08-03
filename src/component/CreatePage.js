@@ -1,9 +1,15 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import { styled } from 'styled-components'
 import Back from './Back'
-import { reducer, setImages, setValues } from './CreateAction'
+import { reducer, setValues } from './CreateAction'
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import { getStorage, ref as storeRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { auth } from '../firebase/myFirebaseConfig';
+import { v4 as uuidv4 } from 'uuid';
+import { get, push, ref, set } from 'firebase/database';
+import database from '../firebase/myFirebaseConfig'
+import { useNavigate } from 'react-router';
 
 
 const MyOption = styled.label({
@@ -36,6 +42,12 @@ const CreatePage = () => {
     img: []
   });
 
+  useEffect(() => {
+    
+  }, [auth.currentUser.uid]);
+
+  let navigate = useNavigate();
+
   const submitFunc = (e) => {
     e.preventDefault();
 
@@ -49,14 +61,58 @@ const CreatePage = () => {
           location.lat = await response.data.results[0]?.geometry.lat ?? 0;
           location.lng = await response.data.results[0]?.geometry.lng ?? 0;
           state.location = location;
-          toast.success("Successfully have found that location");
-          console.log(state);
+          toast.success("Successfully have found that location and created listing");
+          submitImagesToStorage(state.img).then(async (data) => {
+            state.img = await data;
+          }).then(() => {
+            setTimeout(() => {
+              push(ref(database, `users/${auth.currentUser.uid}/listings`), state).then((snapshot) => {
+                navigate(`/categories/${state.sellOrRent}/${snapshot.key}`);
+              })
+              console.log("images are loaded");
+            }, 4000);
+          })
+
+
         }
         else {
-          toast.error("have not found that location");
+          toast.error("Have not found that location, try again!");
         }
       })
   }
+
+
+  const submitImagesToStorage = async (files) => {
+    let result = new Promise((resolve, reject) => {
+      const storage = getStorage();
+
+      let newImages = [];
+      files.map(async (file) => {
+        const { self, name, type } = file;
+        const metadata = {
+          contentType: `${type}`
+        };
+        let fileName = `${auth.currentUser.uid}-${name}-${uuidv4()}`;
+        const storageRef = storeRef(storage, 'images/' + fileName);
+        const uploadTask = await uploadBytesResumable(storageRef, self, metadata)
+          .then(async (snapshot) => {
+            await getDownloadURL(snapshot.ref).then(async (dataUrl) => {
+              newImages.push({
+                name: name,
+                type: type,
+                src: dataUrl
+              })
+              if (files[files.length - 1] === file) {
+                toast.success(`Successfully all images uploaded to Firestore`);
+                resolve(newImages);
+              }
+            });
+          })
+      })
+    })
+    return result;
+  }
+
 
   return (
     <div className='d-flex justify-content-center align-items-center mt-4'>
@@ -80,7 +136,7 @@ const CreatePage = () => {
         </div>
 
         <small className='d-block'>Name</small>
-        <input type="text" onChange={(e) => {
+        <input type="text" className='w-100 p-1' onChange={(e) => {
           setValues(dispatch, "name", e.target.value);
         }} placeholder='Name' />
 
@@ -192,7 +248,15 @@ const CreatePage = () => {
           <small className='d-block'>Images</small>
           <input type="file" id='imgInput' required multiple accept='.png, .jpeg, .jpg' onChange={(e) => {
             // setValues(dispatch, "img", e.target.value);
-            setValues(dispatch, "img", e.target.files);
+            let files = [];
+            for (let file of e.target.files) {
+              files.push({
+                self: file,
+                name: file.name,
+                type: file.type
+              });
+            }
+            setValues(dispatch, "img", files);
           }} />
         </div>
 
@@ -200,7 +264,7 @@ const CreatePage = () => {
       </form>
       <ToastContainer
         position="bottom-center"
-        autoClose={5000}
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
