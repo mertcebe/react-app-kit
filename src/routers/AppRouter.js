@@ -58,6 +58,7 @@ const AppRouter = () => {
                                     <Route path='/profile'>
                                         <Route index element={<ProfilePage />} />
                                         <Route path='create-listing' element={<CreatePage />} />
+                                        <Route path='edit-listing/:id' element={<CreatePage />} />
                                     </Route>
                                 </Route>
 
