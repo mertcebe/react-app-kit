@@ -18,11 +18,24 @@
     display: none;
 }
 
-.liEl:hover > .deleteBtn{
+.liEl:hover>.deleteBtn {
     display: inline-block;
 }
-.radioInput:checked + #myLabel{
+
+.radioInput:checked+#myLabel {
     background-color: #1d5358;
     color: #fff;
     box-shadow: none;
+}
+
+#card {
+    cursor: pointer;
+}
+
+#cardImg {
+    transition: all 0.3s ease;
+}
+
+#card:hover>#cardImg {
+    transform: scale(1.1);
 }

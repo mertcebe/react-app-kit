@@ -42,10 +42,6 @@ const CreatePage = () => {
     img: []
   });
 
-  useEffect(() => {
-    
-  }, [auth.currentUser.uid]);
-
   let navigate = useNavigate();
 
   const submitFunc = (e) => {
@@ -60,6 +56,7 @@ const CreatePage = () => {
           console.log(response.data.results[0]);
           location.lat = await response.data.results[0]?.geometry.lat ?? 0;
           location.lng = await response.data.results[0]?.geometry.lng ?? 0;
+          state.openAddress = await response.data.results[0].formatted;
           state.location = location;
           toast.success("Successfully have found that location and created listing");
           submitImagesToStorage(state.img).then(async (data) => {
@@ -83,7 +80,7 @@ const CreatePage = () => {
 
 
   const submitImagesToStorage = async (files) => {
-    let result = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const storage = getStorage();
 
       let newImages = [];
@@ -110,8 +107,7 @@ const CreatePage = () => {
           })
       })
     })
-    return result;
-  }
+  };
 
 
   return (
@@ -192,7 +188,7 @@ const CreatePage = () => {
 
         <div className="mb-3">
           <small className='d-block'>Description</small>
-          <textarea cols="40" required onChange={(e) => {
+          <textarea cols="40" onChange={(e) => {
             setValues(dispatch, "description", e.target.value);
           }} rows="3"></textarea>
         </div>
@@ -218,7 +214,7 @@ const CreatePage = () => {
           <div className='mb-3 d-flex align-items-center'>
             <div>
               <input type="number" onChange={(e) => {
-                setValues(dispatch, "regularPrice", e.target.value);
+                setValues(dispatch, "regularPrice", `${e.target.value}${state.sellOrRent === "rent" ? "$/month" : "$"}`);
               }} placeholder='0' max={10000000} min={100} required style={{ width: "100px" }} />
             </div>
             <p style={{ alignSelf: "end", opacity: "0.7", marginLeft: "10px", position: "relative", top: "8px" }}>{state.sellOrRent === "rent" ? "$/month" : "$"}</p>
@@ -232,7 +228,7 @@ const CreatePage = () => {
               <div className='mb-3 d-flex align-items-center'>
                 <div>
                   <input type="number" onChange={(e) => {
-                    setValues(dispatch, "discountedPrice", e.target.value);
+                    setValues(dispatch, "discountedPrice", `${e.target.value}${state.sellOrRent === "rent" ? "$/month" : "$"}`);
                   }} placeholder='0' max={Number(state.regularPrice) - 1} min={10} required style={{ width: "100px" }} />
                 </div>
                 <p style={{ alignSelf: "end", opacity: "0.7", marginLeft: "10px", position: "relative", top: "8px" }}>{state.sellOrRent === "rent" ? "$/month" : "$"}</p>
@@ -247,7 +243,6 @@ const CreatePage = () => {
         <div className='mb-3'>
           <small className='d-block'>Images</small>
           <input type="file" id='imgInput' required multiple accept='.png, .jpeg, .jpg' onChange={(e) => {
-            // setValues(dispatch, "img", e.target.value);
             let files = [];
             for (let file of e.target.files) {
               files.push({

@@ -2,16 +2,31 @@ import React, { useEffect, useState } from 'react'
 import { signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../firebase/myFirebaseConfig'
 import { toast, ToastContainer } from 'react-toastify';
-import { ref, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import database from '../firebase/myFirebaseConfig'
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
+import ListingItem from './ListingItem';
 
 const ProfilePage = () => {
   let user = auth.currentUser;
   let [name, setName] = useState(user ? user.displayName : "");
   let [disabled, setDisabled] = useState(true);
   let [changeDetails, setChangeDetails] = useState(false);
+  let [listings, setListings] = useState([]);
+  useEffect(() => {
+    let lists = [];
+    get(ref(database, `users/${user.uid}/listings`))
+      .then((snapshot) => {
+        snapshot.forEach((item) => {
+          console.log(item.val());
+          lists.push(item.val())
+        })
+      }).then(()=>{
+        setListings(lists);
+      })
+    
+  }, []);
 
   let navigate = useNavigate();
 
@@ -46,7 +61,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div>
+    <div className='container'>
       <div className="profilePart d-flex justify-content-between align-items-center" style={{ flexDirection: "column" }}>
         <h4 className='my-4'>My Profile</h4>
         <form style={{ width: "500px" }}>
@@ -64,6 +79,15 @@ const ProfilePage = () => {
           </div>
           <Link to='create-listing' className="btn btn-primary w-100">Sell or Rent Your Home</Link>
         </form>
+
+        <h2>listings</h2>
+        <div className='d-flex justify-content-between align-items-center' style={{flexWrap: "wrap"}}>
+          {
+            listings.map((item, index) => {
+              return <ListingItem item={item} key={index} />
+            })
+          }
+        </div>
       </div>
       <ToastContainer
         position="bottom-center"
