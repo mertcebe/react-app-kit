@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 const Back = ({top, left}) => {
     let navigate = useNavigate();
   return (
-    <div style={{position: "absolute", top: top, left: left}}>
+    <div style={{position: "absolute", top: top, left: left, zIndex: "100"}}>
         <button className='btn' onClick={()=>{
             navigate(-1);
         }}><i className="fa-solid fa-arrow-left"></i></button>

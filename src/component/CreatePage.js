@@ -61,7 +61,7 @@ const CreatePage = ({ edit, list }) => {
           state.openAddress = await response.data.results[0].formatted;
           state.location = location;
           state.dateAdded = new Date().getTime();
-          toast.success(`Successfully have found that location and editted listing`);
+          toast.success(`Successfully have found that location and ${edit?`editted`:`created`} listing`);
           console.log(state.img, "adqwdfaewfesffeeeeeeeee")
           submitImagesToStorage(state.img).then(async (data) => {
             state.img = await data;

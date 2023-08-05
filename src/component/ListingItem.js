@@ -20,7 +20,7 @@ const ListingItem = ({ item, myKey }) => {
     }
     const openDetails = (e) => {
         if(e.target.id !== "editBtn" && e.target.id !== "deleteBtn"){
-            navigate(`categories/${item.sellOrRent}/${item.id}`);
+            navigate(`/categories/${item.sellOrRent}/${item.id}`);
         }
     }
     return (

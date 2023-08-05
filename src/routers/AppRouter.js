@@ -62,8 +62,8 @@ const AppRouter = () => {
                                         <Route index element={<ProfilePage />} />
                                         <Route path='create-listing' element={<CreatePage />} />
                                         <Route path='edit-listing/:id' element={<EditListing />} />
-                                        <Route path='categories/:type/:id' element={<ListDetails />} />
                                     </Route>
+                                    <Route path='/categories/:type/:id' element={<ListDetails />} />
                                 </Route>
 
                                 <Route element={<PublicRoute isAuthorized={isAuthorized} />} >
