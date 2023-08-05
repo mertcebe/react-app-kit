@@ -10,6 +10,9 @@ import useAuthStatus from '../hooks/useAuthStatus';
 import PublicRoute from '../component/PublicRoute';
 import Loading from '../component/Loading';
 import CreatePage from '../component/CreatePage';
+import EditListing from '../component/EditListing';
+import { ToastContainer } from 'react-toastify';
+import ListDetails from '../component/ListDetails';
 
 
 const Navbar = () => {
@@ -47,7 +50,7 @@ const AppRouter = () => {
                     <>
                         <Loading />
                     </>
-                :
+                    :
                     <>
                         <BrowserRouter>
                             <Navbar />
@@ -58,7 +61,8 @@ const AppRouter = () => {
                                     <Route path='/profile'>
                                         <Route index element={<ProfilePage />} />
                                         <Route path='create-listing' element={<CreatePage />} />
-                                        <Route path='edit-listing/:id' element={<CreatePage />} />
+                                        <Route path='edit-listing/:id' element={<EditListing />} />
+                                        <Route path='categories/:type/:id' element={<ListDetails />} />
                                     </Route>
                                 </Route>
 
@@ -68,6 +72,18 @@ const AppRouter = () => {
                                     <Route path='/forgot-password' element={<SignInPage forgotPassword={true} />} />
                                 </Route>
                             </Routes>
+                            <ToastContainer
+                                position="bottom-center"
+                                autoClose={3000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                                theme="dark"
+                            />
                         </BrowserRouter>
                     </>
             }

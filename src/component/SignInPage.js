@@ -135,19 +135,6 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
                 <p className='my-2'>or</p>
                 <div className='btn btn-dark' onClick={submitWithGoogle}>Continue with Google</div>
             </form>
-
-            <ToastContainer
-                position="bottom-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
         </div>
     )
 }

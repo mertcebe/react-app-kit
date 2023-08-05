@@ -8,7 +8,7 @@ const Listings = ({listings}) => {
             <div className='d-flex justify-content-center align-items-center' style={{ flexWrap: "wrap" }}>
                 {
                     listings.map((item, index) => {
-                        return <ListingItem item={item} key={index} />
+                        return <ListingItem item={item} key={index} myKey={index} />
                     })
                 }
             </div>
