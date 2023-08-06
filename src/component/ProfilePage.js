@@ -74,8 +74,8 @@ const ProfilePage = () => {
   return (
     <>
       {loading ?
-      <Loading />
-      :
+        <Loading />
+        :
         <div>
           <div className="profilePart d-flex justify-content-between align-items-center" style={{ flexDirection: "column" }}>
             <h4 className='my-4'>My Profile</h4>
@@ -98,7 +98,10 @@ const ProfilePage = () => {
               listings.length == 0 ?
                 <></>
                 :
-                <Listings listings={listings} />
+                <>
+                  <h5 style={{ marginTop: "50px" }}>My Listings</h5>
+                  <Listings listings={listings} />
+                </>
             }
           </div>
         </div>}

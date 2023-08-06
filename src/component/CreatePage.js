@@ -70,11 +70,13 @@ const CreatePage = ({ edit, list }) => {
               if (edit) {
                 update(ref(database, `users/${auth.currentUser.uid}/listings/${list.id}`), state)
                   .then(() => {
+                    update(ref(database, `listings/${list.id}`),state);
                     navigate(`/profile`);
                   })
               }
               else {
                 push(ref(database, `users/${auth.currentUser.uid}/listings`), state).then((snapshot) => {
+                  set(ref(database, `listings/${snapshot.key}`),state);
                   navigate(`/categories/${state.sellOrRent}/${snapshot.key}`);
                 })
               }

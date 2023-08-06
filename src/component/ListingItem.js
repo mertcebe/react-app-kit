@@ -19,7 +19,7 @@ const ListingItem = ({ item, myKey }) => {
         }
     }
     const openDetails = (e) => {
-        if(e.target.id !== "editBtn" && e.target.id !== "deleteBtn"){
+        if (e.target.id !== "editBtn" && e.target.id !== "deleteBtn") {
             navigate(`/categories/${item.sellOrRent}/${item.id}`);
         }
     }
@@ -32,16 +32,29 @@ const ListingItem = ({ item, myKey }) => {
             <div className="card-body">
                 <small className='d-block text-muted'><i className="fa-solid fa-location-dot text-success"></i> {item.openAddress}</small>
                 <h5 className="card-title">{item.name}</h5>
-                <b className="d-block card-text" style={{ color: "darkcyan" }}>{item.sellOrRent === "rent" ? `${item.regularPrice}$/month` : `${item.regularPrice}$`}</b>
+                <div className='d-flex align-items-center'>
+                    <b className="d-block card-text" style={{ color: "darkcyan" }}>{item.sellOrRent === "rent" ? `${item.regularPrice}$/month` : `${item.regularPrice}$`}</b>
+                    {
+                        item.offer == "yes" ?
+                            <i className="fa-solid fa-tag" style={{ marginLeft: "5px", color: "darkgreen" }}></i>
+                            :
+                            <></>
+                    }
+                </div>
                 <div className='d-flex justify-content-between align-items-center'>
                     <div>
                         <small style={{ marginRight: "14px" }}>{item.beds} {Number(item.beds) > 1 ? "beds" : "bed"}</small>
                         <small>{item.baths} {Number(item.baths) > 1 ? "baths" : "bath"}</small>
                     </div>
-                    <div className='d-flex justify-content-between align-items-center'>
-                        <NavLink to={`edit-listing/${item.id}`} id='editBtn'><i className="fa-solid fa-pen text-dark" id='editBtn'></i></NavLink>
-                        <button className='btn btn-sm text-danger border-0' id='deleteBtn' onClick={deleteList}><i className="fa-solid fa-trash" id='deleteBtn'></i></button>
-                    </div>
+                    {
+                        auth.currentUser.uid === item.uid ?
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <NavLink to={`/edit-listing/${item.id}`} id='editBtn'><i className="fa-solid fa-pen text-dark" id='editBtn'></i></NavLink>
+                                <button className='btn btn-sm text-danger border-0' id='deleteBtn' onClick={deleteList}><i className="fa-solid fa-trash" id='deleteBtn'></i></button>
+                            </div>
+                            :
+                            <></>
+                    }
                 </div>
             </div>
         </div>

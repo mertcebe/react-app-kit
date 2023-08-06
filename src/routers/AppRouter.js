@@ -13,6 +13,7 @@ import CreatePage from '../component/CreatePage';
 import EditListing from '../component/EditListing';
 import { ToastContainer } from 'react-toastify';
 import ListDetails from '../component/ListDetails';
+import CategoriesList from '../component/CategoriesList';
 
 
 const Navbar = () => {
@@ -61,8 +62,9 @@ const AppRouter = () => {
                                     <Route path='/profile'>
                                         <Route index element={<ProfilePage />} />
                                         <Route path='create-listing' element={<CreatePage />} />
-                                        <Route path='edit-listing/:id' element={<EditListing />} />
                                     </Route>
+                                    <Route path='edit-listing/:id' element={<EditListing />} />
+                                    <Route path='/categories/:type' element={<CategoriesList />} />
                                     <Route path='/categories/:type/:id' element={<ListDetails />} />
                                 </Route>
 

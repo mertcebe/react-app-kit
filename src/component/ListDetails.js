@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay } from 'swiper/modules';
-
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
 import { get, ref } from 'firebase/database';
 import database, { auth } from '../firebase/myFirebaseConfig'
 import Loading from './Loading';
@@ -14,14 +9,21 @@ import Back from './Back';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+
 const ListDetails = () => {
     let { type, id } = useParams();
     let [list, setList] = useState();
     let [msgControl, setMsgControl] = useState(false);
     let [msg, setMsg] = useState("");
+    let [name, setName] = useState("");
+    let [email, setEmail] = useState("");
     useEffect(() => {
         const getList = async () => {
-            await get(ref(database, `users/${auth.currentUser.uid}/listings/${id}`))
+            await get(ref(database, `listings/${id}`))
                 .then((snapshot) => {
                     console.log(snapshot.val());
                     setList(snapshot.val());
@@ -30,13 +32,19 @@ const ListDetails = () => {
         getList();
     }, []);
 
-    const contactFunc = () => {
+    const contactFunc = async () => {
         setMsgControl(true);
+        await get(ref(database, `users/${list.uid}`))
+            .then((snapshot) => {
+                console.log(snapshot.val());
+                setName(snapshot.val().name);
+                setEmail(snapshot.val().email);
+            })
     }
 
     const sendMessageFunc = () => {
         if (msg) {
-            setMsgControl(false)
+            setMsgControl(false);
             console.log(msg)
             setMsg("");
             toast.success("Successfully sent message to landlord!")
@@ -46,7 +54,7 @@ const ListDetails = () => {
         }
     }
 
-    if (!list) {
+    if (!list && !name) {
         return (
             <Loading />
         )
@@ -64,7 +72,7 @@ const ListDetails = () => {
                 {list.img.map((item) => {
                     return (
                         <SwiperSlide key={item.id}>
-                            <div className='w-100 overflow-hidden' style={{ height: "300px", background: `url(${item.src}) center no-repeat` }}>
+                            <div className='w-100 overflow-hidden' style={{ height: "500px", background: `url(${item.src}) center no-repeat`, backgroundSize: "contain" }}>
                             </div>
                         </SwiperSlide>
                     )
@@ -98,7 +106,7 @@ const ListDetails = () => {
                         }
                     </div>
                     {
-                        auth.currentUser.uid == list.uid ?
+                        auth.currentUser.uid === list.uid ?
                             <>
                             </>
                             :
@@ -106,15 +114,25 @@ const ListDetails = () => {
                                 {
                                     msgControl ?
                                         <div>
+                                            <small className='text-muted'>Contact {name} for {list.name}!</small>
                                             <div className='d-flex align-items-start'>
-                                                <textarea id="" value={msg} style={{ width: "100%", height: "100px" }} onChange={(e) => {
-                                                    setMsg(e.target.value);
-                                                }} placeholder='Message'></textarea>
+                                                <form className='form-group w-100'>
+                                                    <textarea className='form-control' id="" value={msg} style={{ width: "100%", height: "100px", maxHeight: "200px" }} onChange={(e) => {
+                                                        setMsg(e.target.value);
+                                                    }} placeholder='Message'></textarea>
+                                                </form>
                                                 <button className='btn btn-sm border-0' onClick={() => {
                                                     setMsgControl(false);
                                                 }}>x</button>
                                             </div>
-                                            <button className='btn btn-sm btn-primary my-2' onClick={sendMessageFunc}>Send Message</button>
+                                            {
+                                                msg ?
+                                                    <a href={`mailto:${email}?Subject=${list.name}&body=${msg}`}>
+                                                        <button className='btn btn-sm btn-primary my-2' onClick={sendMessageFunc}>Send Message</button>
+                                                    </a>
+                                                    :
+                                                    <button className='btn btn-sm btn-primary my-2' disabled onClick={sendMessageFunc}>Send Message</button>
+                                            }
                                         </div>
                                         :
                                         <button className='btn btn-sm btn-primary my-2' onClick={contactFunc}>Contact Landlord</button>
