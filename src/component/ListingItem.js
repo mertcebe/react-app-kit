@@ -26,7 +26,7 @@ const ListingItem = ({ item, myKey }) => {
     return (
         <div className={`card shadow border-0 myList-${myKey}`} onClick={openDetails} id='card' style={{ position: "relative", width: "16rem", margin: "10px", overflow: "hidden" }}>
             <span style={{ fontSize: "12px", position: "absolute", top: "10px", left: "10px", zIndex: "100", background: "lightblue", borderRadius: "10px", padding: "0px 10px", opacity: "0.8" }}>{
-                <Moment fromNow>{item.dateAdded}</Moment>
+                <Moment fromNow >{item.dateAdded}</Moment>
             }</span>
             <img src={item.img[0].src} id='cardImg' className="card-img-top" style={{ width: "16rem", height: "10rem" }} alt="..." />
             <div className="card-body">

@@ -41,6 +41,7 @@ const CreatePage = ({ edit, list }) => {
     regularPrice: list ? list.regularPrice : 0,
     discountedPrice: list ? list.discountedPrice : 0,
     img: list ? list.img : [],
+    uid: auth.currentUser.uid,
     dateAdded: ""
   });
 
@@ -61,14 +62,16 @@ const CreatePage = ({ edit, list }) => {
           state.openAddress = await response.data.results[0].formatted;
           state.location = location;
           state.dateAdded = new Date().getTime();
-          toast.success(`Successfully have found that location and ${edit?`editted`:`created`} listing`);
-          console.log(state.img, "adqwdfaewfesffeeeeeeeee")
+          toast.success(`Successfully have found that location and ${edit ? `editted` : `created`} listing`);
           submitImagesToStorage(state.img).then(async (data) => {
             state.img = await data;
           }).then(() => {
             setTimeout(() => {
               if (edit) {
                 update(ref(database, `users/${auth.currentUser.uid}/listings/${list.id}`), state)
+                  .then(() => {
+                    navigate(`/profile`);
+                  })
               }
               else {
                 push(ref(database, `users/${auth.currentUser.uid}/listings`), state).then((snapshot) => {
@@ -79,11 +82,10 @@ const CreatePage = ({ edit, list }) => {
           })
         }
         else {
-          toast.error("Have not found that location, try again!");
+          toast.error("Could not found that location, try again!");
         }
       })
   }
-
 
   const submitImagesToStorage = async (files) => {
     return new Promise((resolve, reject) => {
@@ -114,7 +116,6 @@ const CreatePage = ({ edit, list }) => {
       })
     })
   };
-
 
   return (
     <div className='d-flex justify-content-center align-items-center mt-4'>

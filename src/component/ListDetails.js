@@ -11,10 +11,14 @@ import { get, ref } from 'firebase/database';
 import database, { auth } from '../firebase/myFirebaseConfig'
 import Loading from './Loading';
 import Back from './Back';
+import { NavLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ListDetails = () => {
     let { type, id } = useParams();
     let [list, setList] = useState();
+    let [msgControl, setMsgControl] = useState(false);
+    let [msg, setMsg] = useState("");
     useEffect(() => {
         const getList = async () => {
             await get(ref(database, `users/${auth.currentUser.uid}/listings/${id}`))
@@ -25,6 +29,23 @@ const ListDetails = () => {
         }
         getList();
     }, []);
+
+    const contactFunc = () => {
+        setMsgControl(true);
+    }
+
+    const sendMessageFunc = () => {
+        if (msg) {
+            setMsgControl(false)
+            console.log(msg)
+            setMsg("");
+            toast.success("Successfully sent message to landlord!")
+        }
+        else {
+            toast.info("Enter least one word!");
+        }
+    }
+
     if (!list) {
         return (
             <Loading />
@@ -32,12 +53,11 @@ const ListDetails = () => {
     }
     return (
         <div>
-            <Back top={"60px"} left={"80px"}/>
             <Swiper
                 modules={[Navigation, Pagination, Scrollbar, Autoplay, EffectFade]}
                 spaceBetween={50}
                 slidesPerView={1}
-                autoplay={{ delay: 3000 }}
+                autoplay={{ delay: 4000 }}
                 navigation
                 pagination={{ clickable: true }}
             >
@@ -50,40 +70,77 @@ const ListDetails = () => {
                     )
                 })}
             </Swiper>
-            <div className="context container d-flex justify-content-evenly align-items my-3 p-4" style={{ background: "#efefef" }}>
-                <div className="text w-50 p-4">
+            <div className="context container d-flex justify-content-evenly align-items my-3 p-4 shadow" style={{ flexWrap: "wrap" }}>
+                <div className="text w-50 p-4" id='text'>
                     <h4 className='' style={{ color: "darkblue" }}>{list.name} - {list.sellOrRent === "sell" ? `${list.regularPrice}$` : `${list.regularPrice} $/month`}</h4>
-                    <b style={{fontSize: "14px"}}><i class="fa-solid fa-location-dot text-success"></i> {list.openAddress}</b>
+                    <b style={{ fontSize: "14px" }}><i className="fa-solid fa-location-dot text-success"></i> {list.openAddress}</b>
                     <div className='d-flex align-items my-2'>
                         <button className='btn btn-sm btn-danger px-5' style={{ marginRight: "10px" }}>For {list.sellOrRent === "sell" ? "Sell" : "Rent"}</button>
-                        <button className='btn btn-sm btn-success px-5'>${list.regularPrice - list.discountedPrice} discount</button>
+                        {list.offer == "yes" ? <button className='btn btn-sm btn-success px-5'>${list.regularPrice - list.discountedPrice} discount</button> : <></>}
                     </div>
                     <small className='d-block my-4'>
                         {list.description}
                     </small>
                     <div className='d-flex align-items my-2'>
-                        <b style={{ fontSize: "12px", marginRight: "14px" }}><i class="fa-solid fa-bed"></i> {list.beds}{list.beds > 1 ? ` beds` : ` bed`}</b>
-                        <b style={{ fontSize: "12px", marginRight: "14px" }}><i class="fa-solid fa-bath"></i> {list.baths}{list.baths > 1 ? ` baths` : ` bath`}</b>
+                        <b style={{ fontSize: "12px", marginRight: "14px" }}><i className="fa-solid fa-bed"></i> {list.beds}{list.beds > 1 ? ` beds` : ` bed`}</b>
+                        <b style={{ fontSize: "12px", marginRight: "14px" }}><i className="fa-solid fa-bath"></i> {list.baths}{list.baths > 1 ? ` baths` : ` bath`}</b>
                         {
                             list.parkingSpot == "yes" ?
-                                <b style={{ fontSize: "12px", marginRight: "14px" }}><i class="fa-solid fa-square-parking"></i> Parking Spot</b>
+                                <b style={{ fontSize: "12px", marginRight: "14px" }}><i className="fa-solid fa-square-parking"></i> Parking Spot</b>
                                 :
                                 <></>
                         }
                         {
                             list.furnished == "yes" ?
-                                <b style={{ fontSize: "12px" }}><i class="fa-solid fa-chair"></i> Furnished</b>
+                                <b style={{ fontSize: "12px" }}><i className="fa-solid fa-chair"></i> Furnished</b>
                                 :
                                 <></>
                         }
                     </div>
+                    {
+                        auth.currentUser.uid == list.uid ?
+                            <>
+                            </>
+                            :
+                            <>
+                                {
+                                    msgControl ?
+                                        <div>
+                                            <div className='d-flex align-items-start'>
+                                                <textarea id="" value={msg} style={{ width: "100%", height: "100px" }} onChange={(e) => {
+                                                    setMsg(e.target.value);
+                                                }} placeholder='Message'></textarea>
+                                                <button className='btn btn-sm border-0' onClick={() => {
+                                                    setMsgControl(false);
+                                                }}>x</button>
+                                            </div>
+                                            <button className='btn btn-sm btn-primary my-2' onClick={sendMessageFunc}>Send Message</button>
+                                        </div>
+                                        :
+                                        <button className='btn btn-sm btn-primary my-2' onClick={contactFunc}>Contact Landlord</button>
+                                }
+                            </>
+                    }
+
+
+                    <div className='d-flex justify-content-between align-items'>
+                        <NavLink to={`/profile`} className='btn btn-sm btn-light mt-2 shadow-sm'>Go to Profile</NavLink>
+                        <button className='btn btn-sm border-0' onClick={() => {
+                            navigator.clipboard.writeText(window.location.href)
+                                .then(() => {
+                                    toast.success("Successfully link copied")
+                                })
+                        }}>
+                            <i className="fa-solid fa-share"></i>
+                        </button>
+                    </div>
                 </div>
                 <div className="map">
-                    <iframe 
-                    width="600"
-                    height="400"
-                    frameborder="0"
-                    src={`//maps.google.com/maps?q=${list.location.lat},${list.location.lng}&z=15&output=embed`}></iframe>
+                    <iframe
+                        width="600"
+                        height="400"
+                        frameBorder="0"
+                        src={`//maps.google.com/maps?q=${list.location.lat},${list.location.lng}&z=15&output=embed`}></iframe>
                 </div>
             </div>
         </div>

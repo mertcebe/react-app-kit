@@ -39,3 +39,9 @@
 #card:hover>#cardImg {
     transform: scale(1.1);
 }
+
+@media(max-width: 1200px){
+    #text{
+        width: 100% !important;
+    }
+}

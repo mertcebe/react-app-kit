@@ -9,23 +9,18 @@ import { toast } from 'react-toastify';
 
 const EditListing = () => {
     let { id } = useParams();
-    let [loading, setLoading] = useState(false);
     let [list, setList] = useState();
     let navigate = useNavigate();
     useEffect(() => {
         const func = async () => {
             if (id) {
-                setLoading(true);
                 await get(ref(database, `users/${auth.currentUser.uid}/listings/${id}`))
                     .then((snapshot) => {
                         if (snapshot.val()) {
-                            let list = {
+                            setList({
                                 ...snapshot.val(),
                                 id: id
-                            }
-                            setLoading(false)
-                            // console.log(list)
-                            setList(list)
+                            })
                         }
                         else {
                             toast.error("You can not edit this listing!");
