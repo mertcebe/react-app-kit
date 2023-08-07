@@ -7,41 +7,44 @@ import Listings from './Listings';
 import Back from './Back';
 
 const OffersPage = () => {
+  let [maxLength, setMaxLength] = useState(0);
   let [listingsForMoreOffer, setListingsForMoreOffer] = useState();
-  useEffect(() => {
-    const getListingsForMoreOffer = async () => {
-      let myListings = [];
-      let myListingsForOffer = [];
-      await get(ref(database, `listings`))
-        .then((snapshot) => {
-          snapshot.forEach((item) => {
-            myListings.push({
-              ...item.val(),
-              id: item.key
-            });
-          })
+  const getListingsForMoreOffer = async (val = 8) => {
+    let myListings = [];
+    let myListingsForOffer = [];
+    await get(ref(database, `listings`))
+      .then((snapshot) => {
+        snapshot.forEach((item) => {
+          myListings.push({
+            ...item.val(),
+            id: item.key
+          });
         })
-        .then(() => {
-          let dates = [];
-          for (let item of myListings) {
-            dates.push(item.dateAdded);
-          }
-          dates = dates.sort();
-          dates = dates.reverse();
+      })
+      .then(() => {
+        let dates = [];
+        for (let item of myListings) {
+          dates.push(item.dateAdded);
+        }
+        dates = dates.sort().reverse();
 
-          console.log(dates)
-          for (let i = 0; i < dates.length; i++) {
-            for (let item of myListings) {
-              if (item.dateAdded === dates[i]) {
-                myListingsForOffer.push(item);
-              }
+        console.log(dates)
+        for (let i = 0; i < dates.length; i++) {
+          for (let item of myListings) {
+            if (item.dateAdded === dates[i]) {
+              myListingsForOffer.push(item);
             }
           }
-          setListingsForMoreOffer(myListingsForOffer);
-        })
-    }
+        }
+        setMaxLength(myListingsForOffer.length);
+        setListingsForMoreOffer(myListingsForOffer.slice(0, val > 12?12:val));
+      })
+  }
+  useEffect(() => {
     getListingsForMoreOffer();
   }, []);
+
+
   if (!listingsForMoreOffer) {
     return (
       <Loading />
@@ -57,7 +60,16 @@ const OffersPage = () => {
             <h5 className='m-0'>Recent Offers</h5>
           </div>
           <Listings listings={listingsForMoreOffer} />
-          {/* Do Load More button */}
+          {
+            listingsForMoreOffer.length === maxLength?
+            <></>
+            :
+            <div className='text-center my-4'>
+            <button className='btn btn-sm btn-outline-success' onClick={()=>{
+              getListingsForMoreOffer(listingsForMoreOffer.length + 8)
+            }}>Load More</button>
+          </div>
+          }
         </div>
       </div>
     </div>
