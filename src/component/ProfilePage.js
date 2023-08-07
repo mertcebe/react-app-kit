@@ -96,7 +96,9 @@ const ProfilePage = () => {
             </form>
             {
               listings.length == 0 ?
-                <></>
+                <div className='d-flex justify-content-center align-items-center' style={{height: "300px"}}>
+                  <i className='text-muted' style={{pointerEvents: "none"}}>There is no current offer</i>
+                </div>
                 :
                 <>
                   <h5 style={{ marginTop: "50px" }}>My Listings</h5>

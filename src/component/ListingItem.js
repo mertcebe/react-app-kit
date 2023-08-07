@@ -13,6 +13,7 @@ const ListingItem = ({ item, myKey }) => {
         if (result == true) {
             remove(ref(database, `users/${auth.currentUser.uid}/listings/${item.id}`))
                 .then(() => {
+                    remove(ref(database, `listings/${item.id}`))
                     document.querySelector(`.myList-${myKey}`).remove();
                     toast.success("Successfully deleted!");
                 })

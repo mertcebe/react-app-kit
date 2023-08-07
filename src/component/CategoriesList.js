@@ -2,47 +2,45 @@ import { get, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react'
 import database, { auth } from '../firebase/myFirebaseConfig';
 import Loading from './Loading';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import Listings from './Listings';
 import Back from './Back';
 
 const CategoriesList = () => {
-    let [listingsForMoreOffer, setListingsForMoreOffer] = useState();
+    let { type } = useParams();
+    let [listings, setListings] = useState();
     useEffect(() => {
-        const getListingsForMoreOffer = async () => {
-            let myListings = [];
-            let myListingsForOffer = [];
+        const getListings = async () => {
+            let myListingsForRent = [];
+            let myListingsForSell = [];
             await get(ref(database, `listings`))
-                .then((snapshot) => {
-                    snapshot.forEach((item) => {
-                        myListings.push({
+            .then((snapshot) => {
+                snapshot.forEach((item) => {
+                    if(item.val().sellOrRent === "rent"){
+                        myListingsForRent.push({
                             ...item.val(),
                             id: item.key
                         });
-                    })
-                })
-                .then(() => {
-                    let dates = [];
-                    for (let item of myListings) {
-                        dates.push(item.dateAdded);
                     }
-                    dates = dates.sort();
-                    dates = dates.reverse();
+                    else if(item.val().sellOrRent === "sell"){
+                        myListingsForSell.push({
+                            ...item.val(),
+                            id: item.key
+                        });
+                    }
+                });
+                if(type === "rent"){
+                    setListings(myListingsForRent);
+                }
+                else if(type === "sell"){
+                    setListings(myListingsForSell);
+                }
+            })
 
-                    console.log(dates)
-                    for (let i = 0; i < dates.length; i++) {
-                        for (let item of myListings) {
-                            if (item.dateAdded === dates[i]) {
-                                myListingsForOffer.push(item);
-                            }
-                        }
-                    }
-                    setListingsForMoreOffer(myListingsForOffer);
-                })
         }
-        getListingsForMoreOffer();
+        getListings();
     }, []);
-    if (!listingsForMoreOffer) {
+    if (!listings) {
         return (
             <Loading />
         )
@@ -54,9 +52,9 @@ const CategoriesList = () => {
                 {/* Recent Offers */}
                 <div className='my-5'>
                     <div style={{ marginLeft: "110px" }}>
-                        <h5 className='m-0'>Recent Offers</h5>
+                        <h5 className='m-0'>Places for {type}</h5>
                     </div>
-                    <Listings listings={listingsForMoreOffer} />
+                    <Listings listings={listings} />
                 </div>
             </div>
         </div>

@@ -4,18 +4,20 @@ import { useSelector } from 'react-redux'
 import database, { auth } from '../firebase/myFirebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay } from 'swiper/modules';
+import Loading from './Loading';
+import { NavLink } from 'react-router-dom';
+import Listings from './Listings';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import Loading from './Loading';
-import { NavLink } from 'react-router-dom';
-import Listings from './Listings';
 
 const HomePage = () => {
     let [listings, setListings] = useState();
     let [listingsForOffer, setListingsForOffer] = useState();
+    let [listingsForRent, setListingsForRent] = useState();
+    let [listingsForSell, setListingsForSell] = useState();
     useEffect(() => {
         const getListings = async () => {
             let myListings = [];
@@ -65,10 +67,49 @@ const HomePage = () => {
                     setListingsForOffer(myListingsForOffer);
                 })
         }
+        const getListingsForRent = async () => {
+            let myListings = [];
+            get(ref(database, `listings`))
+                .then((snapshot) => {
+                    snapshot.forEach((item) => {
+                        if (myListings.length === 4) {
+                            console.log(myListings)
+                            setListingsForRent(myListings);
+                            return;
+                        }
+                        if (item.val().sellOrRent === "rent") {
+                            myListings.push({
+                                ...item.val(),
+                                id: item.key
+                            });
+                        }
+                    })
+                })
+        }
+        const getListingsForSell = async () => {
+            let myListings = [];
+            get(ref(database, `listings`))
+            .then((snapshot) => {
+                snapshot.forEach((item) => {
+                    if(myListings.length === 4){
+                        setListingsForSell(myListings);
+                        return;
+                    }
+                    if(item.val().sellOrRent === "sell"){
+                        myListings.push({
+                            ...item.val(),
+                            id: item.key
+                        });
+                    }
+                })
+            })
+        }
+        getListingsForSell()
+        getListingsForRent();
         getListingsForOffer();
         getListings();
     }, []);
-    if (!listings || !listingsForOffer) {
+    if (!listings || !listingsForOffer || !listingsForRent || !listingsForSell) {
         return (
             <Loading />
         )
@@ -100,11 +141,31 @@ const HomePage = () => {
             <div className='container'>
                 {/* Recent Offers */}
                 <div className='my-5'>
-                    <div style={{marginLeft: "110px"}}>
+                    <div style={{ marginLeft: "110px" }}>
                         <h5 className='m-0'>Recent Offers</h5>
-                        <NavLink to={`/categories/rent`} style={{ fontSize: "12px" }}>Show more offers</NavLink>
+                        <NavLink to={`/offers`} style={{ fontSize: "12px" }}>Show more offers</NavLink>
                     </div>
                     <Listings listings={listingsForOffer} />
+                </div>
+
+
+                {/* Places for rent */}
+                <div className='my-5'>
+                    <div style={{ marginLeft: "110px" }}>
+                        <h5 className='m-0'>Places for rent</h5>
+                        <NavLink to={`/categories/rent`} style={{ fontSize: "12px" }}>Show more places for rent</NavLink>
+                    </div>
+                    <Listings listings={listingsForRent} />
+                </div>
+
+
+                {/* Places for sell */}
+                <div className='my-5'>
+                    <div style={{ marginLeft: "110px" }}>
+                        <h5 className='m-0'>Places for sale</h5>
+                        <NavLink to={`/categories/sell`} style={{ fontSize: "12px" }}>Show more places for sale</NavLink>
+                    </div>
+                    <Listings listings={listingsForSell} />
                 </div>
             </div>
         </div>

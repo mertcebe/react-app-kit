@@ -45,3 +45,11 @@
         width: 100% !important;
     }
 }
+
+
+html::-webkit-scrollbar{
+    display: none;
+}
+html{
+    scrollbar-width: 0;
+}
