@@ -25,7 +25,6 @@ const ListDetails = () => {
         const getList = async () => {
             await get(ref(database, `listings/${id}`))
                 .then((snapshot) => {
-                    console.log(snapshot.val());
                     setList(snapshot.val());
                 })
         }
@@ -36,7 +35,6 @@ const ListDetails = () => {
         setMsgControl(true);
         await get(ref(database, `users/${list.uid}`))
             .then((snapshot) => {
-                console.log(snapshot.val());
                 setName(snapshot.val().name);
                 setEmail(snapshot.val().email);
             })
@@ -45,7 +43,6 @@ const ListDetails = () => {
     const sendMessageFunc = () => {
         if (msg) {
             setMsgControl(false);
-            console.log(msg)
             setMsg("");
             toast.success("Successfully sent message to landlord!")
         }
@@ -83,7 +80,7 @@ const ListDetails = () => {
                     <h4 className='' style={{ color: "darkblue" }}>{list.name} - {list.sellOrRent === "sell" ? `${list.regularPrice}$` : `${list.regularPrice} $/month`}</h4>
                     <b style={{ fontSize: "14px" }}><i className="fa-solid fa-location-dot text-success"></i> {list.openAddress}</b>
                     <div className='d-flex align-items my-2'>
-                        <button className='btn btn-sm btn-danger px-5' style={{ marginRight: "10px" }}>For {list.sellOrRent === "sell" ? "Sell" : "Rent"}</button>
+                        <button className='btn btn-sm btn-danger px-5' style={{ marginRight: "10px" }}>For {list.sellOrRent === "sell" ? "Sale" : "Rent"}</button>
                         {list.offer == "yes" ? <button className='btn btn-sm btn-success px-5'>${list.regularPrice - list.discountedPrice} discount</button> : <></>}
                     </div>
                     <small className='d-block my-4'>

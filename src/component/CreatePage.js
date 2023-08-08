@@ -9,8 +9,8 @@ import { auth } from '../firebase/myFirebaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 import { get, push, ref, set, update } from 'firebase/database';
 import database from '../firebase/myFirebaseConfig'
-import { json, useNavigate, useParams } from 'react-router';
-import Loading from './Loading';
+import { useNavigate, useParams } from 'react-router';
+
 
 
 const MyOption = styled.label({
@@ -56,7 +56,6 @@ const CreatePage = ({ edit, list }) => {
     axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${state.address}&key=${apiKey}`)
       .then(async (response) => {
         if (response.data.results.length > 0) {
-          console.log(response.data.results[0]);
           location.lat = await response.data.results[0]?.geometry.lat ?? 0;
           location.lng = await response.data.results[0]?.geometry.lng ?? 0;
           state.openAddress = await response.data.results[0].formatted;
@@ -125,7 +124,6 @@ const CreatePage = ({ edit, list }) => {
       <form onSubmit={submitFunc}>
         <h4 className='text-center my-3'>{edit ? "Edit" : "Create"} Listing</h4>
 
-
         {/* *****Sell / Rent***** */}
         <div className='mb-3'>
           <small className='d-block'>Sell / Rent</small>
@@ -140,11 +138,15 @@ const CreatePage = ({ edit, list }) => {
           <MyOption htmlFor='radio1Input2' id='myLabel'>Rent</MyOption>
         </div>
 
+        
+        {/* Name */}
         <small className='d-block'>Name</small>
         <input type="text" value={state.name} className='w-100 p-1' onChange={(e) => {
           setValues(dispatch, "name", e.target.value);
         }} placeholder='Name' />
 
+
+        {/* Beds and Baths */}
         <div className='d-flex align-items-center my-3'>
           <div>
             <small className='d-block'>Beds</small>
@@ -188,6 +190,8 @@ const CreatePage = ({ edit, list }) => {
           <MyOption htmlFor='radio3Input2' id='myLabel'>No</MyOption>
         </div>
 
+
+        {/* Address */}
         <div className='mb-3'>
           <small className='d-block'>Address</small>
           <textarea cols="40" required defaultValue={state.address} onChange={(e) => {
@@ -195,6 +199,8 @@ const CreatePage = ({ edit, list }) => {
           }} rows="3"></textarea>
         </div>
 
+
+        {/* Description */}
         <div className="mb-3">
           <small className='d-block'>Description</small>
           <textarea cols="40" defaultValue={state.description} onChange={(e) => {
@@ -218,6 +224,7 @@ const CreatePage = ({ edit, list }) => {
         </div>
 
 
+        {/* Price */}
         <div>
           <small className='d-block'>Regular Price</small>
           <div className='mb-3 d-flex align-items-center'>
@@ -249,6 +256,7 @@ const CreatePage = ({ edit, list }) => {
             </>
         }
 
+        {/* Images */}
         <div className='mb-3'>
           <small className='d-block'>Images</small>
           <input type="file" id='imgInput' required multiple accept='.png, .jpeg, .jpg' onChange={(e) => {

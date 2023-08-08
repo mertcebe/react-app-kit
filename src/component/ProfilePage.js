@@ -12,7 +12,7 @@ import Loading from './Loading';
 
 const ProfilePage = () => {
   let user = auth.currentUser;
-  let [name, setName] = useState(user ? user.displayName : "");
+  let [name, setName] = useState(user.displayName ? user.displayName : "");
   let [disabled, setDisabled] = useState(true);
   let [changeDetails, setChangeDetails] = useState(false);
   let [listings, setListings] = useState([]);
@@ -30,7 +30,7 @@ const ProfilePage = () => {
         })
       }).then(() => {
         setListings(lists);
-        setLoading(false)
+        setLoading(false);
       })
 
   }, []);
@@ -96,8 +96,8 @@ const ProfilePage = () => {
             </form>
             {
               listings.length == 0 ?
-                <div className='d-flex justify-content-center align-items-center' style={{height: "300px"}}>
-                  <i className='text-muted' style={{pointerEvents: "none"}}>There is no current offer</i>
+                <div className='d-flex justify-content-center align-items-center' style={{ height: "300px" }}>
+                  <i className='text-muted' style={{ pointerEvents: "none" }}>There is no current offer</i>
                 </div>
                 :
                 <>

@@ -1,6 +1,5 @@
 import { get, ref } from 'firebase/database';
 import React, { useContext, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import database, { auth } from '../firebase/myFirebaseConfig';
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay } from 'swiper/modules';
@@ -25,7 +24,6 @@ const HomePage = () => {
                 .then((snapshot) => {
                     snapshot.forEach((item) => {
                         if (myListings.length === 5) {
-                            console.log(myListings)
                             setListings(myListings);
                             return;
                         }
@@ -53,10 +51,8 @@ const HomePage = () => {
                     for (let item of myListings) {
                         dates.push(item.dateAdded);
                     }
-                    dates = dates.sort();
-                    dates = dates.reverse();
+                    dates = dates.sort().reverse();
 
-                    console.log(dates)
                     for (let i = 0; i < 4; i++) {
                         for (let item of myListings) {
                             if (item.dateAdded === dates[i]) {
@@ -73,7 +69,6 @@ const HomePage = () => {
                 .then((snapshot) => {
                     snapshot.forEach((item) => {
                         if (myListings.length === 4) {
-                            console.log(myListings)
                             setListingsForRent(myListings);
                             return;
                         }
@@ -89,22 +84,22 @@ const HomePage = () => {
         const getListingsForSell = async () => {
             let myListings = [];
             get(ref(database, `listings`))
-            .then((snapshot) => {
-                snapshot.forEach((item) => {
-                    if(myListings.length === 4){
-                        setListingsForSell(myListings);
-                        return;
-                    }
-                    if(item.val().sellOrRent === "sell"){
-                        myListings.push({
-                            ...item.val(),
-                            id: item.key
-                        });
-                    }
+                .then((snapshot) => {
+                    snapshot.forEach((item) => {
+                        if (myListings.length === 4) {
+                            setListingsForSell(myListings);
+                            return;
+                        }
+                        if (item.val().sellOrRent === "sell") {
+                            myListings.push({
+                                ...item.val(),
+                                id: item.key
+                            });
+                        }
+                    })
                 })
-            })
         }
-        getListingsForSell()
+        getListingsForSell();
         getListingsForRent();
         getListingsForOffer();
         getListings();
@@ -114,7 +109,6 @@ const HomePage = () => {
             <Loading />
         )
     }
-    console.log(listingsForOffer)
     return (
         <div>
             <Swiper

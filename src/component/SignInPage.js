@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import database, { auth, provider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, updatePassword, sendPasswordResetEmail, signInWithRedirect } from '../firebase/myFirebaseConfig'
 import { get, ref, set } from 'firebase/database'
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MyDiv = styled.div({
@@ -22,7 +22,6 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
     const submitWithGoogle = () => {
         signInWithRedirect(auth, provider).then(() => {
             set(ref(database, `users/${auth.currentUser.uid}`), { email: auth.currentUser.email, name: auth.currentUser.displayName })
-            navigate("/");
         })
     }
 
@@ -43,7 +42,7 @@ const SignInPage = ({ signIn, register, forgotPassword }) => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
-                console.log(user.uid + " have just sign in!");
+                toast.success(user.displayName + " have just sign in!");
                 navigate("/");
             })
             .catch(() => {

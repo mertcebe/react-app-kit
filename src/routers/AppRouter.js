@@ -1,6 +1,6 @@
 import React from 'react'
 import '../style/style.scss';
-import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom'
 import HomePage from '../component/HomePage'
 import OffersPage from '../component/OffersPage';
 import SignInPage from '../component/SignInPage';
@@ -14,6 +14,7 @@ import EditListing from '../component/EditListing';
 import { ToastContainer } from 'react-toastify';
 import ListDetails from '../component/ListDetails';
 import CategoriesList from '../component/CategoriesList';
+import ExmplePage from '../component/ExmplePage';
 
 
 const Navbar = () => {
@@ -34,14 +35,6 @@ const Navbar = () => {
     )
 }
 
-//? Bunu location olarak kullan!!
-// const Part = () => {
-//     let location = useLocation();
-//     return (
-//         <div>{location.pathname}</div>
-//     )
-// }
-
 const AppRouter = () => {
     let { isAuthorized, loading } = useAuthStatus();
     return (
@@ -56,6 +49,7 @@ const AppRouter = () => {
                         <BrowserRouter>
                             <Navbar />
                             <Routes>
+                                <Route path='/example' element={<ExmplePage />} />
                                 <Route element={<PrivateRoute isAuthorized={isAuthorized} />}>
                                     <Route path='/' element={<HomePage />} />
                                     <Route path='/offers' element={<OffersPage />} />

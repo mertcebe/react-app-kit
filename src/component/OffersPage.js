@@ -28,7 +28,6 @@ const OffersPage = () => {
         }
         dates = dates.sort().reverse();
 
-        console.log(dates)
         for (let i = 0; i < dates.length; i++) {
           for (let item of myListings) {
             if (item.dateAdded === dates[i]) {
