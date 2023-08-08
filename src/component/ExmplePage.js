@@ -16,11 +16,9 @@ const ExmplePage = () => {
         )
         getDocs(query(collection(db, `listings`), limit(10), orderBy("id", "asc")))
         .then((snapshot) => {
-            console.log("**********")
             snapshot.forEach((item) => {
                 console.log(item.data())
             })
-            console.log("**********")
         })
         
 
